@@ -1,0 +1,29 @@
+# Secrets
+.env
+.env.local
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Real resume data
+raw-resume/
+
+# Real scraped job postings
+raw-postings/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated output (regenerate by running main.py / advise.py)
+data_test/analysis/
+data_test/jobs/
+data_test/resume/
+reports_test/

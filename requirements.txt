@@ -1,0 +1,6 @@
+openai
+pydantic
+python-dotenv
+tavily-python
+pdfplumber
+python-whois
