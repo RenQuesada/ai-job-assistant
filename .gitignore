@@ -27,3 +27,5 @@ data_test/analysis/
 data_test/jobs/
 data_test/resume/
 reports_test/
+
+git-cm.py
