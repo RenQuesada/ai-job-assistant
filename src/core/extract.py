@@ -91,9 +91,11 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
                 })
             continue
 
+        # Check if the LLM has sent the final structured result
         if message.parsed:
             logger.debug(f"Extracted {len(message.parsed.required_skills)} required skills, {len(message.parsed.preferred_skills)} preferred skills")
             logger.debug(f"Salary field: {'found' if message.parsed.salary_min else 'not found'} in posting")
+
             return message.parsed
 
         raise ValueError("Model did not return tool calls or a parsed result")
