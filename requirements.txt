@@ -4,3 +4,4 @@ python-dotenv
 tavily-python
 pdfplumber
 python-whois
+pytest
