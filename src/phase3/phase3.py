@@ -65,7 +65,6 @@ whois_lookup_tool = {
 
 legitimacy_tools = [web_search_tool, whois_lookup_tool]
 
-
 def _log_cost(completion) -> None:
     cost = calculate_cost(completion.model_dump())
     logger.debug(
@@ -74,17 +73,14 @@ def _log_cost(completion) -> None:
         cost["tokens"]["total"],
     )
 
-
 def _log_tool_call(name: str, args: dict) -> None:
     logger.debug("Tool call: %s", name)
     logger.debug("Arguments: %s", args)
-
 
 def _tool_result_content(result) -> str:
     if isinstance(result, str):
         return result
     return json.dumps(result, indent=2)
-
 
 def _fit_tier_from_score(score: int) -> str:
     if score >= 80:
@@ -95,11 +91,9 @@ def _fit_tier_from_score(score: int) -> str:
         return "Stretch"
     return "Growth target"
 
-
 def _normalize_fit_assessment(fit: FitAssessment) -> FitAssessment:
     fit.tier = _fit_tier_from_score(fit.score)
     return fit
-
 
 def _signal_badge_class(signal_type: str) -> str:
     normalized = signal_type.strip().lower()
@@ -113,7 +107,6 @@ def _signal_badge_class(signal_type: str) -> str:
     }
     return badge_classes.get(normalized, "signal-neutral")
 
-
 def _signal_badge_label(signal_type: str) -> str:
     normalized = signal_type.strip().lower()
     badge_labels = {
@@ -125,7 +118,6 @@ def _signal_badge_label(signal_type: str) -> str:
         "yellow_flag": "Yellow Flag",
     }
     return badge_labels.get(normalized, "Signal")
-
 
 def _fallback_legitimacy_assessment(reason: str) -> LegitimacyAssessment:
     return LegitimacyAssessment(
@@ -145,7 +137,6 @@ def _fallback_legitimacy_assessment(reason: str) -> LegitimacyAssessment:
         ),
     )
 
-
 def _fallback_fit_assessment(reason: str) -> FitAssessment:
     return _normalize_fit_assessment(
         FitAssessment(
@@ -164,7 +155,6 @@ def _fallback_fit_assessment(reason: str) -> FitAssessment:
             ),
         )
     )
-
 
 def _fallback_application_advice(reason: str) -> ApplicationAdvice:
     note = f"Automated advice generation was unavailable: {reason}"
@@ -195,14 +185,12 @@ def _fallback_application_advice(reason: str) -> ApplicationAdvice:
         ],
     )
 
-
 def _fallback_company_research(reason: str) -> str:
     return (
         "Company research could not be completed automatically. "
         f"Reason: {reason}. Verify the company's official website, careers page, "
         "LinkedIn presence, and recent news manually."
     )
-
 
 def _read_required_inputs(
     market_path: str = "data/analysis/market-analysis.json",
@@ -222,7 +210,6 @@ def _read_required_inputs(
             "Phase 3 requires Phase 1 and Phase 2 outputs:\n" + "\n".join(missing)
         )
     return load_market_analysis(market_path), load_resume_data(resume_path)
-
 
 async def run_legitimacy_agent(
     posting: JobPosting,
@@ -326,7 +313,6 @@ async def run_legitimacy_agent(
         "was insufficient to resolve the company identity or confirm legitimacy."
     )
 
-
 async def assess_fit(
     posting: JobPosting,
     resume_data: ResumeData,
@@ -358,7 +344,6 @@ async def assess_fit(
     except Exception as e:
         logger.debug("Fit assessment degraded gracefully: %s", e)
         return _fallback_fit_assessment(f"Fit assessment failed: {e}")
-
 
 async def generate_application_advice(
     posting: JobPosting,
@@ -401,14 +386,11 @@ async def generate_application_advice(
         logger.debug("Application advisor degraded gracefully: %s", e)
         return _fallback_application_advice(str(e))
 
-
 def _clean_bullet(text: str) -> str:
     return re.sub(r"^\s*[-*•]+\s*", "", text).strip()
 
-
 def _render_list(items: list[str]) -> str:
     return "".join(f"<li>{html.escape(_clean_bullet(item))}</li>" for item in items)
-
 
 def render_application_report_html(
     report: ApplicationReport,
@@ -668,7 +650,6 @@ def render_application_report_html(
 </html>
 """
 
-
 def save_application_report_html(
     report: ApplicationReport,
     posting: JobPosting,
@@ -681,7 +662,6 @@ def save_application_report_html(
         encoding="utf-8",
     )
     return str(out_path)
-
 
 async def build_application_report(pdf_path: str) -> str:
     market_analysis, resume_data = _read_required_inputs()

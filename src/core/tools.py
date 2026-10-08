@@ -25,7 +25,7 @@ def search_company(query: str) -> str:
 def web_search(query: str) -> str:
     """
     General web search using Tavily - for looking up certifications,
-    learning resources, курсы, etc. during gap triage.
+    learning resources, etc. during gap triage.
     Args:
         query: The search query
     Returns:
@@ -44,6 +44,7 @@ def _normalize_domain(domain: str) -> str:
         candidate = candidate.split("@", 1)[1]
     if "://" not in candidate:
         candidate = f"https://{candidate}"
+
     parsed = urlparse(candidate)
     host = parsed.netloc or parsed.path
     host = host.split("/", 1)[0].split(":", 1)[0]
@@ -62,6 +63,7 @@ def _normalize_whois_value(value):
         if not normalized_items:
             return None
         return normalized_items[0] if len(normalized_items) == 1 else normalized_items
+
     if isinstance(value, datetime):
         return value.isoformat()
     if isinstance(value, date):

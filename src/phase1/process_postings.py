@@ -6,7 +6,6 @@ from core.storage import save_job_posting, slugify_job_posting
 from core.manifest import load_manifest, save_manifest
 from core.logging_setup import setup_logging, logger
 
-
 async def process_all_postings(raw_dir: str = "raw-postings", jobs_dir: str = "data/jobs"):
     pdf_paths = list(Path(raw_dir).glob("*.pdf"))
     manifest = load_manifest()
@@ -33,7 +32,6 @@ async def process_all_postings(raw_dir: str = "raw-postings", jobs_dir: str = "d
         results.append(posting)
 
     return results
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
