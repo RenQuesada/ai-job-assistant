@@ -5,7 +5,14 @@ from urllib.parse import urlparse
 import whois
 from tavily import TavilyClient
 
-tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+_tavily_client = None
+
+def _get_tavily_client() -> TavilyClient:
+    # Create client on first use
+    global _tavily_client
+    if _tavily_client is None:
+        _tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+    return _tavily_client
 
 def search_company(query: str) -> str:
     """
@@ -15,7 +22,7 @@ def search_company(query: str) -> str:
     Returns:
         A string summary of search results for the LLM to read.
     """
-    results = tavily_client.search(query=query, max_results=5)
+    results = _get_tavily_client().search(query=query, max_results=5)
     formatted = []
     for r in results.get("results", []):
         formatted.append(f"- {r['title']}: {r['content']}")
@@ -31,7 +38,7 @@ def web_search(query: str) -> str:
     Returns:
         A string summary of search results for the LLM to read.
     """
-    results = tavily_client.search(query=query, max_results=5)
+    results = _get_tavily_client().search(query=query, max_results=5)
     formatted = []
     for r in results.get("results", []):
         formatted.append(f"- {r['title']}: {r['content']}")
@@ -46,7 +53,7 @@ def _normalize_domain(domain: str) -> str:
         candidate = f"https://{candidate}"
 
     parsed = urlparse(candidate)
-    host = parsed.netloc or parsed.path
+    host = parsed.hostname or parsed.path
     host = host.split("/", 1)[0].split(":", 1)[0]
     if host.startswith("www."):
         host = host[4:]

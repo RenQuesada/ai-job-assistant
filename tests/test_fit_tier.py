@@ -12,5 +12,5 @@ from phase3.phase3 import _fit_tier_from_score
     (29, "Growth target"),
     (0, "Growth target"),
 ])
-def test_fit_tier_score(score, expected):
+def test_fit_tier_from_score(score, expected):
     assert _fit_tier_from_score(score) == expected
