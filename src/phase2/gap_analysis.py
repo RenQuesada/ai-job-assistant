@@ -143,7 +143,7 @@ def render_gap_analysis_report(analysis: GapAnalysis) -> str:
 
     lines += ["", "## Gaps", ""]
 
-    triage_order = ["Quick win", "Short-term", "Medium-term", "Long-term"]
+    triage_order = ["Resume update", "Short-term", "Medium-term", "Long-term"]
     for level in triage_order:
         level_gaps = [g for g in analysis.gaps if g.triage_level == level]
         if not level_gaps:

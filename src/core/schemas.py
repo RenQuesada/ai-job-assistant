@@ -86,7 +86,7 @@ class TriagedGap(BaseModel):
     """Represents a skill gap and its recommended priority for improvement."""
     skill: str
     frequency_in_postings: int  # num of analyzed postings requesting this skill
-    triage_level: str  # "Short-term" | "Medium-term" | "Long-term"
+    triage_level: Literal["Resume update", "Short-term", "Medium-term", "Long-term"]
     recommendation: str  # specific, actionable skills (e.g. not "learn AWS")
 
 class GapAnalysis(BaseModel):

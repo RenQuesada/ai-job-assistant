@@ -21,7 +21,7 @@ strengths, gaps, and unique value - then triage each gap by actionability.
    in the postings but could differentiate them - unusual project
    experience, less common technologies, notable achievements.
 4. **Gap triage**: For each gap, assign a triage_level:
-    - "Quick win": the candidate likely already has the underlying skill or
+    - "Resume update": the candidate likely already has the underlying skill or
       experience but didn't list it, or used different terminology.
     - "Short-term": days to weeks - a tutorial, small project, free
       certification.
