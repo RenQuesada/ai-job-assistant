@@ -1,5 +1,6 @@
 import json
 from pdfplumber import open as pdf_open
+
 from core.client import client
 from core.schemas import JobPosting
 from core.cost import calculate_cost
@@ -58,13 +59,26 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
 
     while iteration < max_iterations:
         iteration += 1
+        force_final = iteration == max_iterations
 
-        completion = await client.beta.chat.completions.parse(
-            model=MODEL,
-            messages=messages,
-            tools=tools,
-            response_format=JobPosting,
-        )
+        if force_final:
+            messages.append({
+                "role": "user",
+                "content": (
+                    "Return your final JobPosting now using only the "
+                    "information already gathered - do not call any more tools."
+                )
+            })
+
+        kwargs = {
+            "model": MODEL,
+            "messages": messages,
+            "response_format": JobPosting,
+        }
+        if not force_final:
+            kwargs["tools"] = tools
+
+        completion = await client.beta.chat.completions.parse(**kwargs)
 
         cost = calculate_cost(completion.model_dump())
         logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")

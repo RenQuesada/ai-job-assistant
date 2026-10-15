@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+
 from core.client import client
 from core.schemas import GapAnalysis, ResumeData, MarketAnalysis
 from core.cost import calculate_cost
