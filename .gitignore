@@ -9,6 +9,7 @@ __pycache__/
 .venv/
 venv/
 *.egg-info/
+.pytest_cache/
 
 # Real resume data
 raw-resume/
@@ -16,16 +17,15 @@ raw-resume/
 # Real scraped job postings
 raw-postings/
 
+# Generated output (regenerate by running main.py / advise.py)
+data/
+reports/
+
 # OS / editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# Generated output (regenerate by running main.py / advise.py)
-data_test/analysis/
-data_test/jobs/
-data_test/resume/
-reports_test/
-
+# Personal tools
 git-cm.py
