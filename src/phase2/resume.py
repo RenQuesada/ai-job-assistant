@@ -26,6 +26,11 @@ async def extract_resume(pdf_path: str) -> ResumeData:
     logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")
 
     resume = completion.choices[0].message.parsed
+
+    # Stop if model returned nothing
+    if resume is None:
+        raise ValueError("Resume extraction failed: model returned no parsed result.")
+
     logger.debug(f"Extracted {len(resume.hard_skills)} hard skills, {len(resume.soft_skills)} soft skills, {len(resume.work_experience)} work experience entries, {len(resume.projects)} projects")
 
     return resume

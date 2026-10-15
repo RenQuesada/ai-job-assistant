@@ -1,6 +1,9 @@
+import asyncio
 import pytest
 from core.schemas import JobPosting
-from phase1.market_analysis import compute_skill_frequencies
+from phase1.market_analysis import compute_skill_frequencies, generate_market_analysis
+
+# --- compute_skill_frequencies ---
 
 def _make_posting(required: list[str], preferred: list[str] | None = None) -> JobPosting:
     # Fill unused fields with placeholders
@@ -79,3 +82,9 @@ def test_counts_only_requested_field():
     counts = {s.skill: s.count for s in result}
 
     assert counts == {"Docker": 1, "DevOps": 1, "SQL": 1}
+
+# --- generate_market_analysis ---
+
+def test_generate_market_analysis_rejects_empty_postings(tmp_path):
+    with pytest.raises(ValueError, match="No job postings found"):
+        asyncio.run(generate_market_analysis(str(tmp_path)))

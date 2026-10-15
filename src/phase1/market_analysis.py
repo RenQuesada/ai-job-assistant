@@ -39,6 +39,10 @@ def compute_skill_frequencies(postings: list[JobPosting], field: str, top_n: int
 async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysis:
     postings = load_all_postings(jobs_dir)
 
+    # Stop early on empty data
+    if not postings:
+        raise ValueError(f"No job postings found in {jobs_dir}. Run process_postings.py first.")
+
     top_required = compute_skill_frequencies(postings, "required_skills")
     top_preferred = compute_skill_frequencies(postings, "preferred_skills")
 
@@ -69,6 +73,11 @@ async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysi
     logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")
 
     analysis = completion.choices[0].message.parsed
+
+    # Stop if model returned nothing
+    if analysis is None:
+        raise ValueError("Market analysis failed: model returned no parsed result.")
+
     analysis.postings_analyzed = len(postings)
     analysis.top_required_skills = top_required
     analysis.top_preferred_skills = top_preferred
