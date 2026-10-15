@@ -1,12 +1,15 @@
 import argparse
 import asyncio
+
+from phase1.market_analysis import load_market_analysis
 from phase2.gap_analysis import generate_gap_analysis, save_gap_analysis_json, save_gap_analysis_report
 from core.logging_setup import setup_logging
 
 async def main():
     analysis = await generate_gap_analysis()
+    total_postings = load_market_analysis().postings_analyzed
     json_path = save_gap_analysis_json(analysis)
-    md_path = save_gap_analysis_report(analysis)
+    md_path = save_gap_analysis_report(analysis, total_postings)
     print(f"Saved: {json_path}")
     print(f"Saved: {md_path}")
 

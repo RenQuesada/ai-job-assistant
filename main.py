@@ -10,7 +10,7 @@ if str(SRC) not in sys.path:
 
 from core.logging_setup import setup_logging
 from phase1.process_postings import process_all_postings
-from phase1.market_analysis import generate_market_analysis, save_market_analysis_json, save_market_analysis_report
+from phase1.market_analysis import generate_market_analysis, save_market_analysis_json, save_market_analysis_report, load_market_analysis
 from phase2.resume import extract_resume, save_resume_data
 from phase2.gap_analysis import generate_gap_analysis, save_gap_analysis_json, save_gap_analysis_report
 
@@ -74,8 +74,9 @@ async def run_pipeline(args: argparse.Namespace) -> int:
 
     print("\n=== Phase 2: Generating gap analysis ===")
     gap = await generate_gap_analysis()
+    total_postings = load_market_analysis().postings_analyzed
     print(f"Saved: {save_gap_analysis_json(gap)}")
-    print(f"Saved: {save_gap_analysis_report(gap)}")
+    print(f"Saved: {save_gap_analysis_report(gap, total_postings)}")
 
     print("\nDone. Run `python advise.py <path-to-posting.pdf>` next to evaluate a specific posting.")
     return 0

@@ -129,7 +129,7 @@ def save_gap_analysis_json(analysis: GapAnalysis, path: str = "data/analysis/gap
 def _clean_bullet(text: str) -> str:
     return text.lstrip("- ").strip()
 
-def render_gap_analysis_report(analysis: GapAnalysis) -> str:
+def render_gap_analysis_report(analysis: GapAnalysis, total_postings: int) -> str:
     lines = [
         "# Resume Gap Analysis",
         "",
@@ -151,7 +151,7 @@ def render_gap_analysis_report(analysis: GapAnalysis) -> str:
         lines.append(f"### {level}")
         lines.append("")
         for g in level_gaps:
-            lines.append(f"**{g.skill}** ({g.frequency_in_postings}/9 postings)")
+            lines.append(f"**{g.skill}** ({g.frequency_in_postings}/{total_postings} postings)")
             lines.append(f"- {_clean_bullet(g.recommendation)}")
             lines.append("")
 
@@ -161,10 +161,10 @@ def render_gap_analysis_report(analysis: GapAnalysis) -> str:
 
     return "\n".join(lines)
 
-def save_gap_analysis_report(analysis: GapAnalysis, path: str = "reports/gap-analysis.md") -> str:
+def save_gap_analysis_report(analysis: GapAnalysis, total_postings: int, path: str = "reports/gap-analysis.md") -> str:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_gap_analysis_report(analysis), encoding="utf-8")
+    out_path.write_text(render_gap_analysis_report(analysis, total_postings), encoding="utf-8")
     logger.debug(f"Saved gap analysis report to {out_path}")
 
     return str(out_path)
