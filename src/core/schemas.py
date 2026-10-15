@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Literal, Optional
 
 class CompanyResearch(BaseModel):
@@ -104,8 +104,8 @@ class LegitimacySignal(BaseModel):
 
 class LegitimacyAssessment(BaseModel):
     """Represents the entire legitimacy evaluation"""
-    verdict: str  # "Green" | "Yellow" | "Red"
-    confidence_score: int  # how confident the agent is in the verdict (0-100)
+    verdict: Literal["Green", "Yellow", "Red"]
+    confidence_score: int = Field(ge=0, le=100)  # how confident the agent is in the verdict
     signals: list[LegitimacySignal]
     recommendation: str
 
