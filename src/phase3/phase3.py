@@ -66,7 +66,7 @@ whois_lookup_tool = {
 legitimacy_tools = [web_search_tool, whois_lookup_tool]
 
 def _log_cost(completion) -> None:
-    cost = calculate_cost(completion.model_dump())
+    cost = calculate_cost(completion.model_dump(warnings=False))
     logger.debug(
         "Cost: $%.6f | Tokens: %s",
         cost["total"],

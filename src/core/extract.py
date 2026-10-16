@@ -80,7 +80,7 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
 
         completion = await client.beta.chat.completions.parse(**kwargs)
 
-        cost = calculate_cost(completion.model_dump())
+        cost = calculate_cost(completion.model_dump(warnings=False))
         logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")
 
         message = completion.choices[0].message

@@ -22,7 +22,7 @@ async def extract_resume(pdf_path: str) -> ResumeData:
         response_format=ResumeData,
     )
 
-    cost = calculate_cost(completion.model_dump())
+    cost = calculate_cost(completion.model_dump(warnings=False))
     logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")
 
     resume = completion.choices[0].message.parsed

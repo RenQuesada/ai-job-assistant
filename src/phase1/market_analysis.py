@@ -69,7 +69,7 @@ async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysi
         response_format=MarketAnalysis,
     )
 
-    cost = calculate_cost(completion.model_dump())
+    cost = calculate_cost(completion.model_dump(warnings=False))
     logger.debug(f"Cost: ${cost['total']:.6f} | Tokens: {cost['tokens']['total']}")
 
     analysis = completion.choices[0].message.parsed
