@@ -111,6 +111,11 @@ class LegitimacyAssessment(BaseModel):
 
 class FitAssessment(BaseModel):
     """Represents how well a candidate's qualifications match a job posting."""
+    core_skills_score: int = Field(ge=0, le=40)
+    experience_relevance_score: int = Field(ge=0, le=25)
+    experience_level_score: int = Field(ge=0, le=15)
+    preferred_skills_score: int = Field(ge=0, le=10)
+    education_domain_score: int = Field(ge=0, le=10)
     score: int  # 0-100
     tier: str  # "Strong fit" | "Good fit" | "Stretch" | "Growth target"
     requirements_met: list[str]
