@@ -19,7 +19,7 @@ from core.schemas import (
     MarketAnalysis,
     ResumeData,
 )
-from core.tools import search_company, web_search, whois_lookup
+from core.tools import web_search, whois_lookup
 
 logger = logging.getLogger("aip444")
 
@@ -672,8 +672,8 @@ async def build_application_report(pdf_path: str) -> str:
         f"{posting.company} official website LinkedIn recent news company overview"
     )
     try:
-        _log_tool_call("search_company", {"query": company_query})
-        company_research = search_company(company_query)
+        _log_tool_call("web_search", {"query": company_query})
+        company_research = web_search(company_query)
     except Exception as e:
         logger.debug("Company research degraded gracefully: %s", e)
         company_research = _fallback_company_research(str(e))

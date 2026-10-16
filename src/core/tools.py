@@ -14,21 +14,6 @@ def _get_tavily_client() -> TavilyClient:
         _tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
     return _tavily_client
 
-def search_company(query: str) -> str:
-    """
-    Searches the web for information about a company using Tavily.
-    Args:
-        query: The search query (e.g., "Feathery company size funding")
-    Returns:
-        A string summary of search results for the LLM to read.
-    """
-    results = _get_tavily_client().search(query=query, max_results=5)
-    formatted = []
-    for r in results.get("results", []):
-        formatted.append(f"- {r['title']}: {r['content']}")
-
-    return "\n".join(formatted) if formatted else "No results found."
-
 def web_search(query: str) -> str:
     """
     General web search using Tavily - for looking up certifications,

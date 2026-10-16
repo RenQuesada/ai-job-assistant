@@ -4,7 +4,7 @@ from pdfplumber import open as pdf_open
 from core.client import client
 from core.schemas import JobPosting
 from core.cost import calculate_cost
-from core.tools import search_company
+from core.tools import web_search
 from core.logging_setup import logger
 
 MODEL = "openai/gpt-5-nano" # "openai/gpt-5-nano"
@@ -12,7 +12,7 @@ MODEL = "openai/gpt-5-nano" # "openai/gpt-5-nano"
 company_search_tool = {
     "type": "function",
     "function": {
-        "name": "search_company",
+        "name": "web_search",
         "description": "Search the web for information about a company - size, industry, recent news, culture, reviews. Call this one or more times with different queries to research the company behind a job posting.",
         "strict": True,
         "parameters": {
@@ -49,7 +49,7 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": (
             "Extract structured data from this job posting. Use the "
-            "search_company tool to research the company (size, recent "
+            "web_search tool to research the company (size, recent "
             "news, culture) before producing your final answer:\n\n" + text
         )},
     ]
@@ -93,8 +93,8 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
                 logger.debug(f"Tool call: {tool_call.function.name}")
                 logger.debug(f"Arguments: {args}")
 
-                if tool_call.function.name == "search_company":
-                    result = search_company(args["query"])
+                if tool_call.function.name == "web_search":
+                    result = web_search(args["query"])
                 else:
                     result = f"Error: Unknown tool {tool_call.function.name}"
 
