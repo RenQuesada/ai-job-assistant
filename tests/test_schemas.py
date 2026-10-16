@@ -1,7 +1,8 @@
 import pytest
 from pydantic import ValidationError
 
-from core.schemas import TriagedGap, LegitimacyAssessment, FitAssessment
+from core.schemas import TriagedGap, LegitimacyAssessment
+from helpers import make_fit, FIT_CATEGORY_MAXES
 
 # --- TriagedGap ---
 
@@ -62,50 +63,23 @@ def test_assessment_accepts_valid_verdict(verdict):
 
 # --- FitAssessment ---
 
-FIT_CATEGORY_MAXES = {
-    "core_skills_score": 40,
-    "experience_relevance_score": 25,
-    "experience_level_score": 15,
-    "preferred_skills_score": 10,
-    "education_domain_score": 10,
-}
 
 OUT_OF_BOUNDS = (
     [(field, max_score + 1) for field, max_score in FIT_CATEGORY_MAXES.items()]
     + [(field, -1) for field in FIT_CATEGORY_MAXES]
 )
 
-def _make_fit(
-    core_skills_score: int = 20,
-    experience_relevance_score: int = 10,
-    experience_level_score: int = 10,
-    preferred_skills_score: int = 5,
-    education_domain_score: int = 5,
-) -> FitAssessment:
-    return FitAssessment(
-        core_skills_score=core_skills_score,
-        experience_relevance_score=experience_relevance_score,
-        experience_level_score=experience_level_score,
-        preferred_skills_score=preferred_skills_score,
-        education_domain_score=education_domain_score,
-        score=50,
-        tier="Good fit",
-        requirements_met=["Python"],
-        requirements_gap=["Docker"],
-        overall_assessment="Solid match on core skills",
-    )
-
 @pytest.mark.parametrize("field, max_score", FIT_CATEGORY_MAXES.items())
 def test_fit_accepts_category_at_max(field, max_score):
-    assessment = _make_fit(**{field: max_score}) # Pass by field name
+    assessment = make_fit(**{field: max_score}) # Pass by field name
     assert getattr(assessment, field) == max_score
 
 @pytest.mark.parametrize("field, out_of_bounds_score", OUT_OF_BOUNDS)
 def test_fit_rejects_category_out_of_bounds(field, out_of_bounds_score):
     with pytest.raises(ValidationError):
-        _make_fit(**{field: out_of_bounds_score})
+        make_fit(**{field: out_of_bounds_score})
 
 @pytest.mark.parametrize("field", FIT_CATEGORY_MAXES.keys())
 def test_fit_accepts_category_at_zero(field):
-    assessment = _make_fit(**{field: 0})
+    assessment = make_fit(**{field: 0})
     assert getattr(assessment, field) == 0

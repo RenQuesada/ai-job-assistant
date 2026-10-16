@@ -92,6 +92,14 @@ def _fit_tier_from_score(score: int) -> str:
     return "Growth target"
 
 def _normalize_fit_assessment(fit: FitAssessment) -> FitAssessment:
+    # Total from rubric categories
+    fit.score = (
+        fit.core_skills_score
+        + fit.experience_relevance_score
+        + fit.experience_level_score
+        + fit.preferred_skills_score
+        + fit.education_domain_score
+    )
     fit.tier = _fit_tier_from_score(fit.score)
     return fit
 
@@ -140,6 +148,11 @@ def _fallback_legitimacy_assessment(reason: str) -> LegitimacyAssessment:
 def _fallback_fit_assessment(reason: str) -> FitAssessment:
     return _normalize_fit_assessment(
         FitAssessment(
+            core_skills_score=14,
+            experience_relevance_score=9,
+            experience_level_score=5,
+            preferred_skills_score=4,
+            education_domain_score=3,
             score=35,
             tier="Stretch",
             requirements_met=[
@@ -151,7 +164,7 @@ def _fallback_fit_assessment(reason: str) -> FitAssessment:
             overall_assessment=(
                 "Automated fit analysis was unavailable, so this is a conservative placeholder "
                 "score. Review the posting and your resume manually before deciding how strongly "
-                "to prioritize this application."
+                f"to prioritize this application. Reason: {reason}"
             ),
         )
     )
