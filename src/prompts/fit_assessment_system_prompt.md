@@ -9,7 +9,9 @@ grounded in the provided posting, resume data, and market analysis.
 
 - Use the full 0-100 range, but compute the score from this rubric rather
   than a free-form holistic impression.
-- Score each category first, based on the rubric below
+- Base points only on evidence actually present in the provided resume,
+  projects, work history, and education.
+- Score each category first, based on the rubric below.
 
 ### Rubric
 
@@ -62,4 +64,3 @@ grounded in the provided posting, resume data, and market analysis.
   `requirements_met`.
 - `overall_assessment`: balanced, direct, and useful for deciding whether
   to apply. Briefly reflect the major drivers of the score.
-- `score` and `tier` must agree with those exact bands.
