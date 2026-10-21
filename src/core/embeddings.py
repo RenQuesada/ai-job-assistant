@@ -39,3 +39,10 @@ def group_skills(
             skill_map[skill] = best_name
 
     return skill_map
+
+async def build_skill_map(skills: list[str]) -> dict[str, str]:
+    if not skills:
+        return {}
+    
+    vectors = await embed_texts(skills)
+    return group_skills(skills, vectors)

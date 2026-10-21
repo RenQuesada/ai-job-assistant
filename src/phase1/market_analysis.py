@@ -6,6 +6,7 @@ from core.cost import calculate_cost
 from core.extract import get_file_contents, MODEL
 from core.schemas import JobPosting, MarketAnalysis, SkillFrequency
 from core.logging_setup import logger
+from core.embeddings import build_skill_map
 
 def load_market_analysis(path: str = "data/analysis/market-analysis.json") -> MarketAnalysis:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -45,14 +46,25 @@ def compute_skill_frequencies(
 
 async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysis:
     postings = load_all_postings(jobs_dir)
-
+    
     # Stop early on empty data
     if not postings:
         raise ValueError(f"No job postings found in {jobs_dir}. Run process_postings.py first.")
+    
+    # Order skills most frequent first
+    raw_counts = Counter()
+    for posting in postings:
+        raw_counts.update(posting.required_skills)
+        raw_counts.update(posting.preferred_skills)
+    ordered_skills = [skill for skill, _ in raw_counts.most_common()]
 
-    top_required = compute_skill_frequencies(postings, "required_skills")
-    top_preferred = compute_skill_frequencies(postings, "preferred_skills")
+    skill_map = await build_skill_map(ordered_skills)
+    merged = {skill: label for skill, label in skill_map.items() if skill != label}
+    logger.debug(f"Merged skill variants: {merged}")
 
+    top_required = compute_skill_frequencies(postings, "required_skills", skill_map=skill_map)
+    top_preferred = compute_skill_frequencies(postings, "preferred_skills", skill_map=skill_map)
+    
     system_prompt = get_file_contents("src/prompts/market_analysis_system_prompt.md")
 
     postings_json = json.dumps([p.model_dump() for p in postings], indent=2)
