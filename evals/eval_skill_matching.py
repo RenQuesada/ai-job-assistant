@@ -14,10 +14,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from core.embeddings import dot_product, embed_texts
+from core.embeddings import SKILL_MERGE_THRESHOLD, dot_product, embed_texts
+from core.skill_verification import verify_skill_pairs
 
 PAIRS_PATH = ROOT / "evals" / "skill_pairs.json"
 THRESHOLDS = [0.70, 0.85]
+CANDIDATE_THRESHOLD = 0.60
 
 def report(name: str, results: list[tuple[dict, bool]]) -> None:
     # Count each outcome type
@@ -48,6 +50,20 @@ async def main():
     for threshold in THRESHOLDS:
         results = [(pair, score >= threshold) for pair, score in zip(pairs, scores)]
         report(f"Threshold {threshold}", results)
+    
+    # Option B: auto-merge clear pairs, LLM verifies the ambiguous zone
+    auto_indexes = {i for i, score in enumerate(scores) if score >= SKILL_MERGE_THRESHOLD}
+    candidate_indexes = [
+        i for i, score in enumerate(scores)
+        if CANDIDATE_THRESHOLD <= score < SKILL_MERGE_THRESHOLD
+    ]
+    candidate_pairs = [(pairs[i]["a"], pairs[i]["b"]) for i in candidate_indexes]
+    verdicts = await verify_skill_pairs(candidate_pairs)
+
+    verified_indexes = {i for i, same in zip(candidate_indexes, verdicts) if same}
+    merged_indexes = auto_indexes | verified_indexes
+    results = [(pair, i in merged_indexes) for i, pair in enumerate(pairs)]
+    report("Embeddings + LLM verification", results)
 
 if __name__ == "__main__":
     asyncio.run(main())

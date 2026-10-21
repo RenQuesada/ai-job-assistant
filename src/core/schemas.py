@@ -33,6 +33,16 @@ class SkillFrequency(BaseModel):
     skill: str
     count: int
 
+class SkillPairJudgment(BaseModel):
+    """Represents the LLM's decision on whether two skill names mean the same skill."""
+    index: int
+    reason: str  # one short sentence, before the decision
+    same: bool
+
+class SkillPairJudgments(BaseModel):
+    """Represents the LLM's decisions for a batch of skill pairs."""
+    judgments: list[SkillPairJudgment]
+
 class MarketAnalysis(BaseModel):
     """Represents patterns and trends identified across multiple job postings."""
     postings_analyzed: int
