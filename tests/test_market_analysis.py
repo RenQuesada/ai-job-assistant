@@ -71,6 +71,18 @@ def test_skill_variants_counted_separately():
     counts = {s.skill: s.count for s in result}
     assert counts == {"React": 1, "React.js": 1}
 
+def test_skill_map_merges_variants():
+    postings = [
+        _make_posting(["React"]),
+        _make_posting(["React.js"]),
+    ]
+    skill_map = {"React": "React", "React.js": "React"}
+    
+    result = compute_skill_frequencies(postings, "required_skills", skill_map=skill_map)
+    counts = {s.skill: s.count for s in result}
+    
+    assert counts == {"React": 2}
+
 def test_counts_only_requested_field():
     postings = [
         _make_posting(["Python"], preferred=["Docker"]),

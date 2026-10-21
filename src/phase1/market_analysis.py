@@ -23,10 +23,17 @@ def load_all_postings(jobs_dir: str = "data/jobs") -> list[JobPosting]:
 
     return postings
 
-def compute_skill_frequencies(postings: list[JobPosting], field: str, top_n: int = 10) -> list[SkillFrequency]:
+def compute_skill_frequencies(
+    postings: list[JobPosting],
+    field: str,
+    top_n: int = 10,
+    skill_map: dict[str, str] | None = None,
+) -> list[SkillFrequency]:
     counter = Counter()
     for posting in postings:
         skills = getattr(posting, field)
+        if skill_map:
+            skills = [skill_map.get(skill, skill) for skill in skills]
         counter.update(skills)
     frequencies = [
         SkillFrequency(skill=skill, count=count)
