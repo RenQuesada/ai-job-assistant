@@ -1,7 +1,7 @@
 from core.client import client
 
 EMBEDDING_MODEL = "openai/text-embedding-3-small"
-SKILL_MERGE_THRESHOLD = 0.70
+SKILL_MERGE_THRESHOLD = 0.85
 
 async def embed_texts(texts: list[str]) -> list[list[float]]:
     # Embed all texts in one call
