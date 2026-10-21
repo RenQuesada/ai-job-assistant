@@ -1,3 +1,11 @@
+"""
+Prints the most similar skill pairs from saved postings and probe skills,
+to help choose SKILL_MERGE_THRESHOLD in core/embeddings.py.
+
+Run from the project root:
+    python scripts/explore_skill_similarity.py
+"""
+
 import asyncio
 import sys
 from itertools import combinations
