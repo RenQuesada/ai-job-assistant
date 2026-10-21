@@ -1,0 +1,53 @@
+"""
+Scores skill-matching approaches against labelled pairs in evals/skill_pairs.json.
+
+Run from the project root:
+    python evals/eval_skill_matching.py
+"""
+
+import asyncio
+import json
+import sys
+from pathlib import Path
+
+# Make src/ importable
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
+
+from core.embeddings import dot_product, embed_texts
+
+PAIRS_PATH = ROOT / "evals" / "skill_pairs.json"
+THRESHOLDS = [0.70, 0.85]
+
+def report(name: str, results: list[tuple[dict, bool]]) -> None:
+    # Count each outcome type
+    true_merges = sum(1 for pair, merged in results if merged and pair["same"])
+    false_merges = sum(1 for pair, merged in results if merged and not pair["same"])
+    missed_merges = sum(1 for pair, merged in results if not merged and pair["same"])
+
+    precision = true_merges / (true_merges + false_merges) if true_merges + false_merges else 0.0
+    recall = true_merges / (true_merges + missed_merges) if true_merges + missed_merges else 0.0
+    print(f"\n{name}: precision {precision:.0%} | recall {recall:.0%}")
+
+    # List every mistake
+    for pair, merged in results:
+        if merged and not pair["same"]:
+            print(f"  False merge:  {pair['a']}  <->  {pair['b']}")
+        elif not merged and pair["same"]:
+            print(f"  Missed merge: {pair['a']}  <->  {pair['b']}")
+
+async def main():
+    pairs = json.loads(PAIRS_PATH.read_text(encoding="utf-8"))
+
+    # Embed each unique name once
+    names = sorted({pair["a"] for pair in pairs} | {pair["b"] for pair in pairs})
+    vectors = dict(zip(names, await embed_texts(names)))
+    scores = [dot_product(vectors[pair["a"]], vectors[pair["b"]]) for pair in pairs]
+
+    # Option A at each threshold
+    for threshold in THRESHOLDS:
+        results = [(pair, score >= threshold) for pair, score in zip(pairs, scores)]
+        report(f"Threshold {threshold}", results)
+
+if __name__ == "__main__":
+    asyncio.run(main())
