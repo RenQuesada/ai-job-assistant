@@ -22,28 +22,33 @@ from phase2.resume import extract_resume, save_resume_data
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run the job search assistant setup pipeline (Phases 1 & 2): "
-                     "process job postings, analyze the market, extract resume data, "
-                     "and generate a gap analysis. Run advise.py separately afterward "
-                     "to evaluate a specific new posting."
+        "process job postings, analyze the market, extract resume data, "
+        "and generate a gap analysis. Run advise.py separately afterward "
+        "to evaluate a specific new posting."
     )
     parser.add_argument(
-        "--resume", default=None,
+        "--resume",
+        default=None,
         help="Path to your resume PDF (default: auto-detect the first PDF in raw-resume/)",
     )
     parser.add_argument(
-        "--postings-dir", default="raw-postings",
+        "--postings-dir",
+        default="raw-postings",
         help="Folder containing job posting PDFs to process (default: raw-postings)",
     )
     parser.add_argument(
-        "--skip-postings", action="store_true",
+        "--skip-postings",
+        action="store_true",
         help="Skip posting extraction + market analysis (reuse existing data/jobs data)",
     )
     parser.add_argument(
-        "--skip-resume", action="store_true",
+        "--skip-resume",
+        action="store_true",
         help="Skip resume extraction (reuse existing data/resume/resume.json)",
     )
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
     return parser.parse_args()
+
 
 async def run_pipeline(args: argparse.Namespace) -> int:
     if not args.skip_postings:
@@ -65,10 +70,16 @@ async def run_pipeline(args: argparse.Namespace) -> int:
         else:
             candidates = sorted(Path("raw-resume").glob("*.pdf"))
             if not candidates:
-                print("Error: no PDF found in raw-resume/. Add your resume there or pass --resume.", file=sys.stderr)
+                print(
+                    "Error: no PDF found in raw-resume/. Add your resume there or pass --resume.",
+                    file=sys.stderr,
+                )
                 return 1
             if len(candidates) > 1:
-                print(f"Note: multiple PDFs found in raw-resume/, using {candidates[0].name}", file=sys.stderr)
+                print(
+                    f"Note: multiple PDFs found in raw-resume/, using {candidates[0].name}",
+                    file=sys.stderr,
+                )
             resume_path = candidates[0]
 
         if not resume_path.exists():
@@ -83,13 +94,17 @@ async def run_pipeline(args: argparse.Namespace) -> int:
     print(f"Saved: {save_gap_analysis_json(gap)}")
     print(f"Saved: {save_gap_analysis_report(gap, total_postings)}")
 
-    print("\nDone. Run `python advise.py <path-to-posting.pdf>` next to evaluate a specific posting.")
+    print(
+        "\nDone. Run `python advise.py <path-to-posting.pdf>` next to evaluate a specific posting."
+    )
     return 0
+
 
 def main() -> int:
     args = parse_args()
     setup_logging(verbose=args.verbose)
     return asyncio.run(run_pipeline(args))
+
 
 if __name__ == "__main__":
     sys.exit(main())

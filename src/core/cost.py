@@ -81,30 +81,23 @@ def _get_model_pricing(model_id: str) -> Dict[str, float]:
         Dictionary with 'prompt' and 'completion' pricing per token
     """
     try:
-        response = requests.get(
-            'https://openrouter.ai/api/v1/models'
-        )
+        response = requests.get("https://openrouter.ai/api/v1/models")
         response.raise_for_status()
 
         data = response.json()
-        model = next(
-            (m for m in data['data'] if m['id'] == model_id),
-            None
-        )
+        model = next((m for m in data["data"] if m["id"] == model_id), None)
 
-        if not model or 'pricing' not in model:
-            print(f'Warning: No pricing found for {model_id}')
-            return {'prompt': 0.0, 'completion': 0.0}
+        if not model or "pricing" not in model:
+            print(f"Warning: No pricing found for {model_id}")
+            return {"prompt": 0.0, "completion": 0.0}
 
         return {
-            'prompt': float(model['pricing']['prompt'] or 0),
-            'completion': float(
-                model['pricing']['completion'] or 0
-            )
+            "prompt": float(model["pricing"]["prompt"] or 0),
+            "completion": float(model["pricing"]["completion"] or 0),
         }
     except Exception as e:
-        print(f'Error fetching pricing: {e}')
-        return {'prompt': 0.0, 'completion': 0.0}
+        print(f"Error fetching pricing: {e}")
+        return {"prompt": 0.0, "completion": 0.0}
 
 
 def calculate_cost(completion: Dict[str, Any]) -> Dict[str, Any]:
@@ -121,38 +114,34 @@ def calculate_cost(completion: Dict[str, Any]) -> Dict[str, Any]:
     Raises:
         ValueError: If completion is missing required fields
     """
-    model_id = completion.get('model')
-    usage = completion.get('usage')
+    model_id = completion.get("model")
+    usage = completion.get("usage")
 
     if not model_id:
-        raise ValueError(
-            'Completion response missing model field'
-        )
+        raise ValueError("Completion response missing model field")
 
     if not usage:
-        raise ValueError(
-            'Completion response missing usage field'
-        )
+        raise ValueError("Completion response missing usage field")
 
     # Fetch pricing for the model used
     pricing = _get_model_pricing(model_id)
 
-    prompt_tokens = usage.get('prompt_tokens', 0)
-    completion_tokens = usage.get('completion_tokens', 0)
-    total_tokens = usage.get('total_tokens', 0)
+    prompt_tokens = usage.get("prompt_tokens", 0)
+    completion_tokens = usage.get("completion_tokens", 0)
+    total_tokens = usage.get("total_tokens", 0)
 
-    input_cost = prompt_tokens * pricing['prompt']
-    output_cost = completion_tokens * pricing['completion']
+    input_cost = prompt_tokens * pricing["prompt"]
+    output_cost = completion_tokens * pricing["completion"]
     total_cost = input_cost + output_cost
 
     return {
-        'input': input_cost,
-        'output': output_cost,
-        'total': total_cost,
-        'tokens': {
-            'prompt': prompt_tokens,
-            'completion': completion_tokens,
-            'total': total_tokens
+        "input": input_cost,
+        "output": output_cost,
+        "total": total_cost,
+        "tokens": {
+            "prompt": prompt_tokens,
+            "completion": completion_tokens,
+            "total": total_tokens,
         },
-        'model': model_id
+        "model": model_id,
     }

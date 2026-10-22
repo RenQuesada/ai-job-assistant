@@ -11,6 +11,7 @@ CASES = [
 ]
 RUNS = 5
 
+
 async def main():
     # One-time setup
     market_analysis = load_market_analysis()
@@ -19,7 +20,9 @@ async def main():
         # Per-case setup
         raw_text = extract_text_from_pdf(case["path"])
         posting = await extract_job_posting(case["path"])
-        company_research = web_search(f"{posting.company} official website LinkedIn recent news company overview")
+        company_research = web_search(
+            f"{posting.company} official website LinkedIn recent news company overview"
+        )
 
         print(f"\n{case['path']} (expected: {case['expected']})")
         verdicts = []
@@ -33,11 +36,14 @@ async def main():
                 company_research=company_research,
             )
             verdicts.append(result.verdict)
-            print(f"Run {i + 1}: {result.verdict} (confidence {result.confidence_score})")
+            print(
+                f"Run {i + 1}: {result.verdict} (confidence {result.confidence_score})"
+            )
 
         # Per-case summary
         passed = sum(1 for v in verdicts if v in case["expected"])
         print(f"Passed: {passed}/{RUNS}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

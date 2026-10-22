@@ -8,10 +8,14 @@ from core.schemas import JobPosting, MarketAnalysis, SkillFrequency
 from core.logging_setup import logger
 from core.embeddings import build_skill_map
 
-def load_market_analysis(path: str = "data/analysis/market-analysis.json") -> MarketAnalysis:
+
+def load_market_analysis(
+    path: str = "data/analysis/market-analysis.json",
+) -> MarketAnalysis:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
 
     return MarketAnalysis(**data)
+
 
 def load_all_postings(jobs_dir: str = "data/jobs") -> list[JobPosting]:
     postings = []
@@ -23,6 +27,7 @@ def load_all_postings(jobs_dir: str = "data/jobs") -> list[JobPosting]:
     logger.debug(f"Loaded {len(postings)} postings from {jobs_dir}")
 
     return postings
+
 
 def compute_skill_frequencies(
     postings: list[JobPosting],
@@ -40,17 +45,22 @@ def compute_skill_frequencies(
         SkillFrequency(skill=skill, count=count)
         for skill, count in counter.most_common(top_n)
     ]
-    logger.debug(f"Computed {field} frequencies: top {len(frequencies)} of {len(counter)} distinct skills")
+    logger.debug(
+        f"Computed {field} frequencies: top {len(frequencies)} of {len(counter)} distinct skills"
+    )
 
     return frequencies
 
+
 async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysis:
     postings = load_all_postings(jobs_dir)
-    
+
     # Stop early on empty data
     if not postings:
-        raise ValueError(f"No job postings found in {jobs_dir}. Run process_postings.py first.")
-    
+        raise ValueError(
+            f"No job postings found in {jobs_dir}. Run process_postings.py first."
+        )
+
     # Order skills most frequent first
     raw_counts = Counter()
     for posting in postings:
@@ -62,28 +72,40 @@ async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysi
     merged = {skill: label for skill, label in skill_map.items() if skill != label}
     logger.debug(f"Merged skill variants: {merged}")
 
-    top_required = compute_skill_frequencies(postings, "required_skills", skill_map=skill_map)
-    top_preferred = compute_skill_frequencies(postings, "preferred_skills", skill_map=skill_map)
-    
+    top_required = compute_skill_frequencies(
+        postings, "required_skills", skill_map=skill_map
+    )
+    top_preferred = compute_skill_frequencies(
+        postings, "preferred_skills", skill_map=skill_map
+    )
+
     system_prompt = get_file_contents("src/prompts/market_analysis_system_prompt.md")
 
     postings_json = json.dumps([p.model_dump() for p in postings], indent=2)
-    skills_json = json.dumps({
-        "top_required_skills": [s.model_dump() for s in top_required],
-        "top_preferred_skills": [s.model_dump() for s in top_preferred],
-    }, indent=2)
+    skills_json = json.dumps(
+        {
+            "top_required_skills": [s.model_dump() for s in top_required],
+            "top_preferred_skills": [s.model_dump() for s in top_preferred],
+        },
+        indent=2,
+    )
 
-    logger.debug(f"Requesting market analysis synthesis from {MODEL} for {len(postings)} postings")
+    logger.debug(
+        f"Requesting market analysis synthesis from {MODEL} for {len(postings)} postings"
+    )
 
     completion = await client.beta.chat.completions.parse(
         model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": (
-                f"Here is the pre-computed skill frequency data:\n{skills_json}\n\n"
-                f"Here is the full structured data for all {len(postings)} postings:\n{postings_json}\n\n"
-                "Analyze this data and produce the market analysis fields."
-            )},
+            {
+                "role": "user",
+                "content": (
+                    f"Here is the pre-computed skill frequency data:\n{skills_json}\n\n"
+                    f"Here is the full structured data for all {len(postings)} postings:\n{postings_json}\n\n"
+                    "Analyze this data and produce the market analysis fields."
+                ),
+            },
         ],
         response_format=MarketAnalysis,
     )
@@ -103,13 +125,17 @@ async def generate_market_analysis(jobs_dir: str = "data/jobs") -> MarketAnalysi
 
     return analysis
 
-def save_market_analysis_json(analysis: MarketAnalysis, path: str = "data/analysis/market-analysis.json") -> str:
+
+def save_market_analysis_json(
+    analysis: MarketAnalysis, path: str = "data/analysis/market-analysis.json"
+) -> str:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(analysis.model_dump_json(indent=2), encoding="utf-8")
     logger.debug(f"Saved market analysis JSON to {out_path}")
 
     return str(out_path)
+
 
 def render_market_analysis_report(analysis: MarketAnalysis) -> str:
     lines = [
@@ -165,7 +191,10 @@ def render_market_analysis_report(analysis: MarketAnalysis) -> str:
 
     return "\n".join(lines)
 
-def save_market_analysis_report(analysis: MarketAnalysis, path: str = "reports/market-analysis.md") -> str:
+
+def save_market_analysis_report(
+    analysis: MarketAnalysis, path: str = "reports/market-analysis.md"
+) -> str:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(render_market_analysis_report(analysis), encoding="utf-8")

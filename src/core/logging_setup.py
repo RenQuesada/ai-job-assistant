@@ -2,8 +2,13 @@ import logging
 import os
 import sys
 
+
 def setup_logging(verbose: bool = False) -> logging.Logger:
-    level = logging.DEBUG if verbose or os.environ.get("LOG_LEVEL", "").lower() == "debug" else logging.WARNING
+    level = (
+        logging.DEBUG
+        if verbose or os.environ.get("LOG_LEVEL", "").lower() == "debug"
+        else logging.WARNING
+    )
 
     logger = logging.getLogger("aip444")
     logger.setLevel(level)
@@ -14,5 +19,6 @@ def setup_logging(verbose: bool = False) -> logging.Logger:
     logger.addHandler(handler)
 
     return logger
+
 
 logger = setup_logging()

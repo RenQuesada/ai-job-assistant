@@ -7,12 +7,14 @@ from tavily import TavilyClient
 
 _tavily_client = None
 
+
 def _get_tavily_client() -> TavilyClient:
     # Create client on first use
     global _tavily_client
     if _tavily_client is None:
         _tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
     return _tavily_client
+
 
 def web_search(query: str) -> str:
     """
@@ -30,6 +32,7 @@ def web_search(query: str) -> str:
 
     return "\n".join(formatted) if formatted else "No results found."
 
+
 def _normalize_domain(domain: str) -> str:
     candidate = domain.strip().lower()
     if "@" in candidate and "/" not in candidate:
@@ -45,12 +48,11 @@ def _normalize_domain(domain: str) -> str:
 
     return host
 
+
 def _normalize_whois_value(value):
     if isinstance(value, list):
         normalized_items = [
-            _normalize_whois_value(item)
-            for item in value
-            if item not in (None, "")
+            _normalize_whois_value(item) for item in value if item not in (None, "")
         ]
         if not normalized_items:
             return None
@@ -64,6 +66,7 @@ def _normalize_whois_value(value):
         return None
 
     return value
+
 
 def whois_lookup(domain: str) -> dict:
     """

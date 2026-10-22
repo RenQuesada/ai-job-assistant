@@ -7,6 +7,7 @@ from core.cost import calculate_cost
 from core.extract import get_file_contents, extract_text_from_pdf, MODEL
 from core.logging_setup import logger, setup_logging
 
+
 async def extract_resume(pdf_path: str) -> ResumeData:
     text = extract_text_from_pdf(pdf_path)
     system_prompt = get_file_contents("src/prompts/resume_extraction_system_prompt.md")
@@ -17,7 +18,10 @@ async def extract_resume(pdf_path: str) -> ResumeData:
         model=MODEL,
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": f"Extract structured data from this resume:\n\n{text}"},
+            {
+                "role": "user",
+                "content": f"Extract structured data from this resume:\n\n{text}",
+            },
         ],
         response_format=ResumeData,
     )
@@ -31,9 +35,12 @@ async def extract_resume(pdf_path: str) -> ResumeData:
     if resume is None:
         raise ValueError("Resume extraction failed: model returned no parsed result.")
 
-    logger.debug(f"Extracted {len(resume.hard_skills)} hard skills, {len(resume.soft_skills)} soft skills, {len(resume.work_experience)} work experience entries, {len(resume.projects)} projects")
+    logger.debug(
+        f"Extracted {len(resume.hard_skills)} hard skills, {len(resume.soft_skills)} soft skills, {len(resume.work_experience)} work experience entries, {len(resume.projects)} projects"
+    )
 
     return resume
+
 
 def save_resume_data(resume: ResumeData, path: str = "data/resume/resume.json") -> str:
     out_path = Path(path)
@@ -42,6 +49,7 @@ def save_resume_data(resume: ResumeData, path: str = "data/resume/resume.json") 
     logger.debug(f"Saved resume data to {out_path}")
 
     return str(out_path)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

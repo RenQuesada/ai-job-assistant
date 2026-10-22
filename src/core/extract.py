@@ -7,7 +7,7 @@ from core.cost import calculate_cost
 from core.tools import web_search
 from core.logging_setup import logger
 
-MODEL = "openai/gpt-5-nano" # "openai/gpt-5-nano"
+MODEL = "openai/gpt-5-nano"  # "openai/gpt-5-nano"
 
 company_search_tool = {
     "type": "function",
@@ -20,24 +20,27 @@ company_search_tool = {
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "The search query, e.g. 'Feathery company funding size' or 'CMiC company reviews culture'"
+                    "description": "The search query, e.g. 'Feathery company funding size' or 'CMiC company reviews culture'",
                 }
             },
             "required": ["query"],
-            "additionalProperties": False
-        }
-    }
+            "additionalProperties": False,
+        },
+    },
 }
 
 tools = [company_search_tool]
+
 
 def get_file_contents(path: str) -> str:
     with open(path, "r") as f:
         return f.read()
 
+
 def extract_text_from_pdf(pdf_path: str) -> str:
     with pdf_open(pdf_path) as pdf:
         return "\n".join(page.extract_text() or "" for page in pdf.pages)
+
 
 async def extract_job_posting(pdf_path: str) -> JobPosting:
     text = extract_text_from_pdf(pdf_path)
@@ -47,11 +50,14 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
 
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": (
-            "Extract structured data from this job posting. Use the "
-            "web_search tool to research the company (size, recent "
-            "news, culture) before producing your final answer:\n\n" + text
-        )},
+        {
+            "role": "user",
+            "content": (
+                "Extract structured data from this job posting. Use the "
+                "web_search tool to research the company (size, recent "
+                "news, culture) before producing your final answer:\n\n" + text
+            ),
+        },
     ]
 
     max_iterations = 5
@@ -62,13 +68,15 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
         force_final = iteration == max_iterations
 
         if force_final:
-            messages.append({
-                "role": "user",
-                "content": (
-                    "Return your final JobPosting now using only the "
-                    "information already gathered - do not call any more tools."
-                )
-            })
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Return your final JobPosting now using only the "
+                        "information already gathered - do not call any more tools."
+                    ),
+                }
+            )
 
         kwargs = {
             "model": MODEL,
@@ -98,17 +106,19 @@ async def extract_job_posting(pdf_path: str) -> JobPosting:
                 else:
                     result = f"Error: Unknown tool {tool_call.function.name}"
 
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": tool_call.id,
-                    "content": result
-                })
+                messages.append(
+                    {"role": "tool", "tool_call_id": tool_call.id, "content": result}
+                )
             continue
 
         # Check if the LLM has sent the final structured result
         if message.parsed:
-            logger.debug(f"Extracted {len(message.parsed.required_skills)} required skills, {len(message.parsed.preferred_skills)} preferred skills")
-            logger.debug(f"Salary field: {'found' if message.parsed.salary_min else 'not found'} in posting")
+            logger.debug(
+                f"Extracted {len(message.parsed.required_skills)} required skills, {len(message.parsed.preferred_skills)} preferred skills"
+            )
+            logger.debug(
+                f"Salary field: {'found' if message.parsed.salary_min else 'not found'} in posting"
+            )
 
             return message.parsed
 

@@ -16,6 +16,7 @@ CATEGORIES = [
     "education_domain_score",
 ]
 
+
 async def main():
     market_analysis = load_market_analysis()
     resume_data = load_resume_data()
@@ -34,7 +35,10 @@ async def main():
     print("\nSpread across runs (max - min):")
     for field in CATEGORIES + ["score"]:
         values = [getattr(fit, field) for fit in results]
-        print(f"{field}: {min(values)}-{max(values)} (spread {max(values) - min(values)})")
+        print(
+            f"{field}: {min(values)}-{max(values)} (spread {max(values) - min(values)})"
+        )
+
 
 if __name__ == "__main__":
     asyncio.run(main())

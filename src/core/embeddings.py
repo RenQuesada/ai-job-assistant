@@ -8,6 +8,7 @@ EMBEDDING_MODEL = "openai/text-embedding-3-small"
 SKILL_MERGE_THRESHOLD = 0.85
 CANDIDATE_THRESHOLD = 0.60
 
+
 async def embed_texts(texts: list[str]) -> list[list[float]]:
     # Embed all texts in one call
     response = await client.embeddings.create(
@@ -17,8 +18,10 @@ async def embed_texts(texts: list[str]) -> list[list[float]]:
     )
     return [item.embedding for item in response.data]
 
+
 def dot_product(vec_a: list[float], vec_b: list[float]) -> float:
     return sum(a * b for a, b in zip(vec_a, vec_b))
+
 
 def group_skills(
     skills: list[str],
@@ -48,6 +51,7 @@ def group_skills(
 
     return skill_map
 
+
 async def build_skill_map(skills: list[str]) -> dict[str, str]:
     if not skills:
         return {}
@@ -65,6 +69,8 @@ async def build_skill_map(skills: list[str]) -> dict[str, str]:
     verified_pairs = {
         frozenset(pair) for pair, same in zip(candidate_pairs, verdicts) if same
     }
-    logger.debug(f"Verified {len(verified_pairs)} of {len(candidate_pairs)} candidate pairs as same skill")
+    logger.debug(
+        f"Verified {len(verified_pairs)} of {len(candidate_pairs)} candidate pairs as same skill"
+    )
 
     return group_skills(skills, vectors, verified_pairs=verified_pairs)

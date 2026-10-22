@@ -4,6 +4,7 @@ from core.extract import MODEL, get_file_contents
 from core.logging_setup import logger
 from core.schemas import SkillPairJudgments
 
+
 async def verify_skill_pairs(pairs: list[tuple[str, str]]) -> list[bool]:
     if not pairs:
         return []

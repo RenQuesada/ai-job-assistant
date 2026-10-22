@@ -19,45 +19,55 @@ web_search_tool = {
             "properties": {
                 "query": {
                     "type": "string",
-                    "description": "The search query, e.g. 'AWS Cloud Practitioner certification cost time'"
+                    "description": "The search query, e.g. 'AWS Cloud Practitioner certification cost time'",
                 }
             },
             "required": ["query"],
-            "additionalProperties": False
-        }
-    }
+            "additionalProperties": False,
+        },
+    },
 }
 
 tools = [web_search_tool]
+
 
 def load_resume_data(path: str = "data/resume/resume.json") -> ResumeData:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
 
     return ResumeData(**data)
 
-def load_market_analysis(path: str = "data/analysis/market-analysis.json") -> MarketAnalysis:
+
+def load_market_analysis(
+    path: str = "data/analysis/market-analysis.json",
+) -> MarketAnalysis:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
 
     return MarketAnalysis(**data)
+
 
 async def generate_gap_analysis() -> GapAnalysis:
     resume = load_resume_data()
     market = load_market_analysis()
     system_prompt = get_file_contents("src/prompts/gap_analysis_system_prompt.md")
 
-    logger.debug(f"Generating gap analysis against {market.postings_analyzed} analyzed postings")
+    logger.debug(
+        f"Generating gap analysis against {market.postings_analyzed} analyzed postings"
+    )
 
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": (
-            "Here is the candidate's resume data:\n"
-            f"{resume.model_dump_json(indent=2)}\n\n"
-            "Here is the market analysis of job postings in their target field:\n"
-            f"{market.model_dump_json(indent=2)}\n\n"
-            "Identify strengths, gaps (triaged by actionability), and unique "
-            "value. Use web_search to find specific, current details for "
-            "gap recommendations."
-        )},
+        {
+            "role": "user",
+            "content": (
+                "Here is the candidate's resume data:\n"
+                f"{resume.model_dump_json(indent=2)}\n\n"
+                "Here is the market analysis of job postings in their target field:\n"
+                f"{market.model_dump_json(indent=2)}\n\n"
+                "Identify strengths, gaps (triaged by actionability), and unique "
+                "value. Use web_search to find specific, current details for "
+                "gap recommendations."
+            ),
+        },
     ]
 
     max_iterations = 6
@@ -68,13 +78,15 @@ async def generate_gap_analysis() -> GapAnalysis:
         force_final = iteration == max_iterations
 
         if force_final:
-            messages.append({
-                "role": "user",
-                "content": (
-                    "Return your final GapAnalysis now using only the "
-                    "information already gathered - do not call any more tools."
-                )
-            })
+            messages.append(
+                {
+                    "role": "user",
+                    "content": (
+                        "Return your final GapAnalysis now using only the "
+                        "information already gathered - do not call any more tools."
+                    ),
+                }
+            )
 
         kwargs = {
             "model": MODEL,
@@ -104,22 +116,25 @@ async def generate_gap_analysis() -> GapAnalysis:
                 else:
                     result = f"Error: Unknown tool {tool_call.function.name}"
 
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": tool_call.id,
-                    "content": result
-                })
+                messages.append(
+                    {"role": "tool", "tool_call_id": tool_call.id, "content": result}
+                )
             continue
 
         if message.parsed:
-            logger.debug(f"Gap analysis complete: {len(message.parsed.strengths)} strengths, {len(message.parsed.gaps)} gaps identified")
+            logger.debug(
+                f"Gap analysis complete: {len(message.parsed.strengths)} strengths, {len(message.parsed.gaps)} gaps identified"
+            )
             return message.parsed
 
         raise ValueError("Model did not return tool calls or a parsed result")
 
     raise ValueError("Max iterations reached without a final structured result")
 
-def save_gap_analysis_json(analysis: GapAnalysis, path: str = "data/analysis/gap-analysis.json") -> str:
+
+def save_gap_analysis_json(
+    analysis: GapAnalysis, path: str = "data/analysis/gap-analysis.json"
+) -> str:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(analysis.model_dump_json(indent=2), encoding="utf-8")
@@ -127,8 +142,10 @@ def save_gap_analysis_json(analysis: GapAnalysis, path: str = "data/analysis/gap
 
     return str(out_path)
 
+
 def _clean_bullet(text: str) -> str:
     return text.lstrip("- ").strip()
+
 
 def render_gap_analysis_report(analysis: GapAnalysis, total_postings: int) -> str:
     lines = [
@@ -152,7 +169,9 @@ def render_gap_analysis_report(analysis: GapAnalysis, total_postings: int) -> st
         lines.append(f"### {level}")
         lines.append("")
         for g in level_gaps:
-            lines.append(f"**{g.skill}** ({g.frequency_in_postings}/{total_postings} postings)")
+            lines.append(
+                f"**{g.skill}** ({g.frequency_in_postings}/{total_postings} postings)"
+            )
             lines.append(f"- {_clean_bullet(g.recommendation)}")
             lines.append("")
 
@@ -162,10 +181,15 @@ def render_gap_analysis_report(analysis: GapAnalysis, total_postings: int) -> st
 
     return "\n".join(lines)
 
-def save_gap_analysis_report(analysis: GapAnalysis, total_postings: int, path: str = "reports/gap-analysis.md") -> str:
+
+def save_gap_analysis_report(
+    analysis: GapAnalysis, total_postings: int, path: str = "reports/gap-analysis.md"
+) -> str:
     out_path = Path(path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(render_gap_analysis_report(analysis, total_postings), encoding="utf-8")
+    out_path.write_text(
+        render_gap_analysis_report(analysis, total_postings), encoding="utf-8"
+    )
     logger.debug(f"Saved gap analysis report to {out_path}")
 
     return str(out_path)

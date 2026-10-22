@@ -19,6 +19,7 @@ def parse_args() -> argparse.Namespace:
 
     return parser.parse_args()
 
+
 async def main() -> int:
     args = parse_args()
     setup_logging(verbose=args.verbose)
@@ -45,6 +46,7 @@ async def main() -> int:
 
     print(output_path)
     return 0
+
 
 if __name__ == "__main__":
     raise SystemExit(asyncio.run(main()))

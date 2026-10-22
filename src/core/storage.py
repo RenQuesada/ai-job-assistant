@@ -3,12 +3,14 @@ import re
 from pathlib import Path
 from core.schemas import JobPosting
 
+
 def slugify_job_posting(job_title: str, company: str) -> str:
     combined = f"{job_title}-{company}".lower()
     combined = re.sub(r"[^a-z0-9\s-]", "", combined)
     combined = re.sub(r"[\s_-]+", "-", combined).strip("-")
 
     return combined
+
 
 def save_job_posting(posting: JobPosting, jobs_dir: str = "data/jobs") -> str:
     Path(jobs_dir).mkdir(parents=True, exist_ok=True)

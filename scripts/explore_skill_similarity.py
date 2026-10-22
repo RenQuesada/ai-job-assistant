@@ -14,12 +14,20 @@ from phase1.market_analysis import load_all_postings
 
 # Known variants and known traps
 PROBE_SKILLS = [
-    "React", "React.js", "ReactJS",
-    "Java", "JavaScript",
-    "SQL", "PostgreSQL", "MySQL",
-    "REST APIs", "RESTful services",
-    "Docker", "Kubernetes",
+    "React",
+    "React.js",
+    "ReactJS",
+    "Java",
+    "JavaScript",
+    "SQL",
+    "PostgreSQL",
+    "MySQL",
+    "REST APIs",
+    "RESTful services",
+    "Docker",
+    "Kubernetes",
 ]
+
 
 async def main():
     # Collect skills from saved postings plus probes
@@ -36,15 +44,18 @@ async def main():
     pairs = []
     for (skill_a, vec_a), (skill_b, vec_b) in combinations(zip(skills, vectors), 2):
         pairs.append((dot_product(vec_a, vec_b), skill_a, skill_b))
-    
+
     # Most similar first
     pairs.sort(reverse=True)
 
     # Candidate pairs for LLM verification
-    candidates = [(score, a, b) for score, a, b in pairs if score >= CANDIDATE_THRESHOLD]
+    candidates = [
+        (score, a, b) for score, a, b in pairs if score >= CANDIDATE_THRESHOLD
+    ]
     for score, skill_a, skill_b in candidates:
         print(f"{score:.3f}  {skill_a}  <->  {skill_b}")
     print(f"\n{len(candidates)} candidate pairs out of {len(pairs)} total")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

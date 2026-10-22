@@ -8,6 +8,7 @@ FIT_CATEGORY_MAXES = {
     "education_domain_score": 10,
 }
 
+
 def make_fit(
     core_skills_score: int = 20,
     experience_relevance_score: int = 10,

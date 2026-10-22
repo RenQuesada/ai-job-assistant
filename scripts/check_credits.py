@@ -42,11 +42,7 @@ OPENROUTER_KEY_URL = "https://openrouter.ai/api/v1/key"
 
 def get_api_key(cli_key):
     """Gets API key from various sources in priority order."""
-    return (
-        cli_key
-        or os.environ.get("OPENROUTER_API_KEY")
-        or None
-    )
+    return cli_key or os.environ.get("OPENROUTER_API_KEY") or None
 
 
 def fetch_key_info(api_key):
@@ -123,55 +119,29 @@ def format_key_display(response):
     if data.get("limit") is None:
         lines.append("Credit Limit:      Unlimited")
     else:
-        lines.append(
-            f"Credit Limit:      "
-            f"{format_currency(data['limit'])}"
-        )
+        lines.append(f"Credit Limit:      {format_currency(data['limit'])}")
 
     if data.get("limit_remaining") is None:
         lines.append("Remaining:         Unlimited")
     else:
-        lines.append(
-            f"Remaining:         "
-            f"{format_currency(data['limit_remaining'])}"
-        )
+        lines.append(f"Remaining:         {format_currency(data['limit_remaining'])}")
 
         # Calculate percentage used
-        if (
-            data.get("limit") is not None
-            and data["limit"] > 0
-        ):
+        if data.get("limit") is not None and data["limit"] > 0:
             percent_used = (
-                (data["limit"] - data["limit_remaining"])
-                / data["limit"]
-                * 100
+                (data["limit"] - data["limit_remaining"]) / data["limit"] * 100
             )
-            lines.append(
-                f"Used:              "
-                f"{percent_used:.2f}%"
-            )
+            lines.append(f"Used:              {percent_used:.2f}%")
 
     lines.append("")
 
     # Usage information
     lines.append("USAGE (OPENROUTER MODELS)")
     lines.append("-" * 60)
-    lines.append(
-        f"All Time:          "
-        f"{format_currency(data['usage'])}"
-    )
-    lines.append(
-        f"Today (UTC):       "
-        f"{format_currency(data['usage_daily'])}"
-    )
-    lines.append(
-        f"This Week (UTC):   "
-        f"{format_currency(data['usage_weekly'])}"
-    )
-    lines.append(
-        f"This Month (UTC):  "
-        f"{format_currency(data['usage_monthly'])}"
-    )
+    lines.append(f"All Time:          {format_currency(data['usage'])}")
+    lines.append(f"Today (UTC):       {format_currency(data['usage_daily'])}")
+    lines.append(f"This Week (UTC):   {format_currency(data['usage_weekly'])}")
+    lines.append(f"This Month (UTC):  {format_currency(data['usage_monthly'])}")
 
     lines.append("=" * 60)
 
