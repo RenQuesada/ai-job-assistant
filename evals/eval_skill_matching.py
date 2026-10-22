@@ -10,6 +10,8 @@ import json
 import sys
 from pathlib import Path
 
+from core.embeddings import CANDIDATE_THRESHOLD
+
 # Make src/ importable
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -19,7 +21,6 @@ from core.skill_verification import verify_skill_pairs
 
 PAIRS_PATH = ROOT / "evals" / "skill_pairs.json"
 THRESHOLDS = [0.70, 0.85]
-CANDIDATE_THRESHOLD = 0.60
 
 def report(name: str, results: list[tuple[dict, bool]]) -> None:
     # Count each outcome type

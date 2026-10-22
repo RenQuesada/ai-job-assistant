@@ -15,7 +15,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from core.embeddings import dot_product, embed_texts
+from core.embeddings import CANDIDATE_THRESHOLD, dot_product, embed_texts
 from phase1.market_analysis import load_all_postings
 
 # Known variants and known traps
@@ -26,8 +26,6 @@ PROBE_SKILLS = [
     "REST APIs", "RESTful services",
     "Docker", "Kubernetes",
 ]
-
-CANDIDATE_THRESHOLD = 0.60
 
 async def main():
     # Collect skills from saved postings plus probes

@@ -38,3 +38,12 @@ def test_group_skills_keeps_separate_just_below_threshold():
 def test_group_skills_uses_first_skill_as_canonical():
     skill_map = group_skills(["React.js", "React"], [[1, 0], [1, 0]])
     assert skill_map == {"React.js": "React.js", "React": "React.js"}
+
+def test_group_skills_merges_verified_pair_below_threshold():
+    # [1, 0] and [0, 1] score 0, but the pair is verified
+    skill_map = group_skills(
+        ["REST APIs", "RESTful services"],
+        [[1, 0], [0, 1]],
+        verified_pairs={frozenset(("REST APIs", "RESTful services"))},
+    )
+    assert skill_map == {"REST APIs": "REST APIs", "RESTful services": "REST APIs"}
