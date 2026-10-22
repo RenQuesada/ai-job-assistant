@@ -1,11 +1,12 @@
 import json
+
 from pdfplumber import open as pdf_open
 
 from core.client import client
-from core.schemas import JobPosting
 from core.cost import calculate_cost
-from core.tools import web_search
 from core.logging_setup import logger
+from core.schemas import JobPosting
+from core.tools import web_search
 
 MODEL = "openai/gpt-5-nano"  # "openai/gpt-5-nano"
 

@@ -1,8 +1,8 @@
 import pytest
+from helpers import FIT_CATEGORY_MAXES, make_fit
 from pydantic import ValidationError
 
-from core.schemas import TriagedGap, LegitimacyAssessment
-from helpers import make_fit, FIT_CATEGORY_MAXES
+from core.schemas import LegitimacyAssessment, TriagedGap
 
 # --- TriagedGap ---
 

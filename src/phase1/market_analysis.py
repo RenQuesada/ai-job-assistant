@@ -1,12 +1,13 @@
 import json
 from collections import Counter
 from pathlib import Path
+
 from core.client import client
 from core.cost import calculate_cost
-from core.extract import get_file_contents, MODEL
-from core.schemas import JobPosting, MarketAnalysis, SkillFrequency
-from core.logging_setup import logger
 from core.embeddings import build_skill_map
+from core.extract import MODEL, get_file_contents
+from core.logging_setup import logger
+from core.schemas import JobPosting, MarketAnalysis, SkillFrequency
 
 
 def load_market_analysis(

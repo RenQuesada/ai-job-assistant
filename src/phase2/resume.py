@@ -1,11 +1,12 @@
-import asyncio
 import argparse
+import asyncio
 from pathlib import Path
+
 from core.client import client
-from core.schemas import ResumeData
 from core.cost import calculate_cost
-from core.extract import get_file_contents, extract_text_from_pdf, MODEL
+from core.extract import MODEL, extract_text_from_pdf, get_file_contents
 from core.logging_setup import logger, setup_logging
+from core.schemas import ResumeData
 
 
 async def extract_resume(pdf_path: str) -> ResumeData:

@@ -43,8 +43,7 @@ def _normalize_domain(domain: str) -> str:
     parsed = urlparse(candidate)
     host = parsed.hostname or parsed.path
     host = host.split("/", 1)[0].split(":", 1)[0]
-    if host.startswith("www."):
-        host = host[4:]
+    host = host.removeprefix("www.")
 
     return host
 
@@ -85,7 +84,7 @@ def whois_lookup(domain: str) -> dict:
 
     try:
         result = whois.whois(normalized_domain)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 - whois raises many types; return error as data for the agent
         return {
             "domain": normalized_domain,
             "error": str(e),

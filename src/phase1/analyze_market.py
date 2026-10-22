@@ -1,11 +1,12 @@
 import argparse
 import asyncio
+
+from core.logging_setup import setup_logging
 from phase1.market_analysis import (
     generate_market_analysis,
     save_market_analysis_json,
     save_market_analysis_report,
 )
-from core.logging_setup import setup_logging
 
 
 async def main():

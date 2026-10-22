@@ -1,10 +1,11 @@
 import argparse
 import asyncio
 from pathlib import Path
+
 from core.extract import extract_job_posting
-from core.storage import save_job_posting, slugify_job_posting
+from core.logging_setup import setup_logging
 from core.manifest import load_manifest, save_manifest
-from core.logging_setup import setup_logging, logger
+from core.storage import save_job_posting
 
 
 async def process_all_postings(
@@ -23,7 +24,7 @@ async def process_all_postings(
 
         try:
             posting = await extract_job_posting(str(path))
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001 - one bad PDF shouldn't stop the batch
             print(f"{path.name} -> FAILED during extraction: {e}")
             continue
 

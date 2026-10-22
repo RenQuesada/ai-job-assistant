@@ -1,4 +1,3 @@
-import pytest
 from core.tools import _normalize_domain
 
 

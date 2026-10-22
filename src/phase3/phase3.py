@@ -12,8 +12,6 @@ from core.extract import (
     extract_text_from_pdf,
     get_file_contents,
 )
-from phase2.gap_analysis import load_resume_data
-from phase1.market_analysis import load_market_analysis
 from core.schemas import (
     ApplicationAdvice,
     ApplicationReport,
@@ -25,6 +23,8 @@ from core.schemas import (
     ResumeData,
 )
 from core.tools import web_search, whois_lookup
+from phase1.market_analysis import load_market_analysis
+from phase2.gap_analysis import load_resume_data
 
 logger = logging.getLogger("aip444")
 
@@ -334,7 +334,7 @@ async def run_legitimacy_agent(
 
             break
     except Exception as e:
-        logger.debug("Legitimacy agent degraded gracefully: %s", e)
+        logger.warning("Legitimacy agent degraded gracefully: %s", e, exc_info=True)
         return _fallback_legitimacy_assessment(
             f"The investigation could not be completed cleanly: {e}"
         )
@@ -374,7 +374,7 @@ async def assess_fit(
         _log_cost(completion)
         return _normalize_fit_assessment(completion.choices[0].message.parsed)
     except Exception as e:
-        logger.debug("Fit assessment degraded gracefully: %s", e)
+        logger.warning("Fit assessment degraded gracefully: %s", e, exc_info=True)
         return _fallback_fit_assessment(f"Fit assessment failed: {e}")
 
 
@@ -418,7 +418,7 @@ async def generate_application_advice(
         _log_cost(completion)
         return completion.choices[0].message.parsed
     except Exception as e:
-        logger.debug("Application advisor degraded gracefully: %s", e)
+        logger.warning("Application advisor degraded gracefully: %s", e, exc_info=True)
         return _fallback_application_advice(str(e))
 
 
@@ -715,7 +715,7 @@ async def build_application_report(pdf_path: str) -> str:
         _log_tool_call("web_search", {"query": company_query})
         company_research = web_search(company_query)
     except Exception as e:
-        logger.debug("Company research degraded gracefully: %s", e)
+        logger.warning("Company research degraded gracefully: %s", e, exc_info=True)
         company_research = _fallback_company_research(str(e))
 
     legitimacy = await run_legitimacy_agent(

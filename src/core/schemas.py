@@ -1,14 +1,15 @@
+from typing import Literal
+
 from pydantic import BaseModel, Field
-from typing import Literal, Optional
 
 
 class CompanyResearch(BaseModel):
     """Represents information researched about a company."""
 
-    company_size: Optional[str] = None
-    recent_news: Optional[str] = None
-    culture_signals: Optional[str] = None
-    other_notes: Optional[str] = None
+    company_size: str | None = None
+    recent_news: str | None = None
+    culture_signals: str | None = None
+    other_notes: str | None = None
 
 
 class JobPosting(BaseModel):
@@ -16,8 +17,8 @@ class JobPosting(BaseModel):
 
     job_title: str
     company: str
-    location: Optional[str] = None
-    remote: Optional[str] = (
+    location: str | None = None
+    remote: str | None = (
         None  # (e.g. "Remote", "Hybrid", "On-site") or None if not stated
     )
 
@@ -25,14 +26,14 @@ class JobPosting(BaseModel):
     preferred_skills: list[str]  # Can be empty list, not all postings have bonus skills
 
     experience_level: str  # (e.g. "3-5 years", "Entry-level", or "Senior")
-    education: Optional[str] = None
+    education: str | None = None
 
-    salary_min: Optional[int] = None
-    salary_max: Optional[int] = None
+    salary_min: int | None = None
+    salary_max: int | None = None
 
     responsibilities: list[str]
-    posting_age_days: Optional[int] = None  # null if no date found in posting
-    company_research: Optional[CompanyResearch] = None
+    posting_age_days: int | None = None  # null if no date found in posting
+    company_research: CompanyResearch | None = None
 
 
 class SkillFrequency(BaseModel):
@@ -88,7 +89,7 @@ class WorkExperience(BaseModel):
 
     role: str
     company: str
-    duration: Optional[str] = None
+    duration: str | None = None
     responsibilities: list[str]
     achievements: list[str]
 

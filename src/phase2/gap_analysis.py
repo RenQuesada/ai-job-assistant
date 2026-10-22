@@ -2,11 +2,11 @@ import json
 from pathlib import Path
 
 from core.client import client
-from core.schemas import GapAnalysis, ResumeData, MarketAnalysis
 from core.cost import calculate_cost
-from core.extract import get_file_contents, MODEL
-from core.tools import web_search
+from core.extract import MODEL, get_file_contents
 from core.logging_setup import logger
+from core.schemas import GapAnalysis, MarketAnalysis, ResumeData
+from core.tools import web_search
 
 web_search_tool = {
     "type": "function",

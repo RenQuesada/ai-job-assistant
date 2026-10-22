@@ -1,6 +1,6 @@
-import json
 import re
 from pathlib import Path
+
 from core.schemas import JobPosting
 
 

@@ -1,11 +1,11 @@
 import pytest
+from helpers import make_fit
 
 from phase3.phase3 import (
+    _fallback_fit_assessment,
     _fit_tier_from_score,
     _normalize_fit_assessment,
-    _fallback_fit_assessment,
 )
-from helpers import make_fit
 
 
 @pytest.mark.parametrize(

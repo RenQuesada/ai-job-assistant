@@ -66,11 +66,12 @@ ALTERNATIVE USAGE WITH OPENAI SDK:
     cost = calculate_cost(completion_dict)
 """
 
+from typing import Any
+
 import requests
-from typing import Dict, Any
 
 
-def _get_model_pricing(model_id: str) -> Dict[str, float]:
+def _get_model_pricing(model_id: str) -> dict[str, float]:
     """
     Fetches pricing information for a specific model from OpenRouter
 
@@ -95,12 +96,12 @@ def _get_model_pricing(model_id: str) -> Dict[str, float]:
             "prompt": float(model["pricing"]["prompt"] or 0),
             "completion": float(model["pricing"]["completion"] or 0),
         }
-    except Exception as e:
+    except (requests.RequestException, ValueError) as e:
         print(f"Error fetching pricing: {e}")
         return {"prompt": 0.0, "completion": 0.0}
 
 
-def calculate_cost(completion: Dict[str, Any]) -> Dict[str, Any]:
+def calculate_cost(completion: dict[str, Any]) -> dict[str, Any]:
     """
     Calculates the cost in USD from a chat completion response
 

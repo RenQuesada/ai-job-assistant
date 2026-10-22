@@ -1,5 +1,7 @@
 import asyncio
+
 import pytest
+
 from core.schemas import JobPosting
 from phase1.market_analysis import compute_skill_frequencies, generate_market_analysis
 

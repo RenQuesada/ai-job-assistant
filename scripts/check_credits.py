@@ -15,8 +15,8 @@ import argparse
 import json
 import os
 import sys
-import urllib.request
 import urllib.error
+import urllib.request
 
 USAGE = """
 Usage: check_credits [options]
@@ -67,7 +67,7 @@ def fetch_key_info(api_key):
             msg = f"Failed to fetch key info: {e.code} {e.reason}"
         print(f"Error fetching key info: {msg}", file=sys.stderr)
         sys.exit(1)
-    except Exception as e:
+    except (urllib.error.URLError, json.JSONDecodeError) as e:
         print(f"Error fetching key info: {e}", file=sys.stderr)
         sys.exit(1)
 
