@@ -1,10 +1,4 @@
 import asyncio
-import sys
-from pathlib import Path
-
-# Make src/ importable
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
 
 from core.extract import extract_job_posting
 from phase1.market_analysis import load_market_analysis

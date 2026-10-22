@@ -7,13 +7,7 @@ Run from the project root:
 """
 
 import asyncio
-import sys
 from itertools import combinations
-from pathlib import Path
-
-# Make src/ importable
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
 
 from core.embeddings import CANDIDATE_THRESHOLD, dot_product, embed_texts
 from phase1.market_analysis import load_all_postings

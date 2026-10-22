@@ -3,12 +3,8 @@ import asyncio
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-SRC = ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
-
 from core.logging_setup import setup_logging
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

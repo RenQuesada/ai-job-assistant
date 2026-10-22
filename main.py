@@ -3,16 +3,21 @@ import asyncio
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
-SRC = ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
-
 from core.logging_setup import setup_logging
+from phase1.market_analysis import (
+    generate_market_analysis,
+    load_market_analysis,
+    save_market_analysis_json,
+    save_market_analysis_report,
+)
 from phase1.process_postings import process_all_postings
-from phase1.market_analysis import generate_market_analysis, save_market_analysis_json, save_market_analysis_report, load_market_analysis
+from phase2.gap_analysis import (
+    generate_gap_analysis,
+    save_gap_analysis_json,
+    save_gap_analysis_report,
+)
 from phase2.resume import extract_resume, save_resume_data
-from phase2.gap_analysis import generate_gap_analysis, save_gap_analysis_json, save_gap_analysis_report
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(

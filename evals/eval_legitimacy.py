@@ -1,10 +1,4 @@
 import asyncio
-import sys
-from pathlib import Path
-
-# Make src/ importable
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
 
 from core.extract import extract_job_posting, extract_text_from_pdf
 from core.tools import web_search

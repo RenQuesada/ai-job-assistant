@@ -7,14 +7,11 @@ Run from the project root:
 
 import asyncio
 import json
-import sys
 from pathlib import Path
 
 from core.embeddings import CANDIDATE_THRESHOLD
 
-# Make src/ importable
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
 
 from core.embeddings import SKILL_MERGE_THRESHOLD, dot_product, embed_texts
 from core.skill_verification import verify_skill_pairs
